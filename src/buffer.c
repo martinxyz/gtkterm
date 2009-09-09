@@ -83,9 +83,8 @@ void put_chars(char *chars, unsigned int size, gboolean crlf_auto)
 	      size += 1;
 	    }
 	}
+      chars = buffer_tmp->str;
     }
-
-  chars = buffer_tmp->str;
 
   if(buffer == NULL)
     {
@@ -119,6 +118,8 @@ void put_chars(char *chars, unsigned int size, gboolean crlf_auto)
   
   if(write_func != NULL)
     write_func(characters, size);
+
+  g_string_free(buffer_tmp, 1);
 }
 
 void write_buffer(void)

@@ -438,30 +438,7 @@ void put_hexadecimal(gchar *string, guint size)
 
 void put_text(gchar *string, guint size)
 {
-  int pos;
-  GString *buffer_tmp;
-  gchar *in_buffer;
-  
-  buffer_tmp =  g_string_new(string);
-  in_buffer=buffer_tmp->str;
-
-  in_buffer += size;
-  for(pos=size; pos>0; pos--)
-    {
-      in_buffer--;
-      if(*in_buffer=='\r' && *(in_buffer+1) != '\n') 
-	{
-	  g_string_insert_c(buffer_tmp, pos, '\n');
-	  size += 1;
-	}
-      if(*in_buffer=='\n' && *(in_buffer-1) != '\r') 
-	{
-	  g_string_insert_c(buffer_tmp, pos-1, '\r');
-	  size += 1;
-	}
-    }
-
-  vte_terminal_feed(VTE_TERMINAL(display), buffer_tmp->str, size);
+  vte_terminal_feed(VTE_TERMINAL(display), string, size);
 }
 
 gint send_serial(gchar *string, gint len)
