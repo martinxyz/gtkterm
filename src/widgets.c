@@ -581,7 +581,7 @@ gboolean Send_Hexadecimal(GtkWidget *widget, GdkEventKey *event, gpointer pointe
   guchar val;
   guint val_read;
   guint sent = 0;
-  gchar written[3];
+  gchar written[4];
   gchar *all_written;
 
   text = (gchar *)gtk_entry_get_text(GTK_ENTRY(widget));
@@ -597,7 +597,7 @@ gboolean Send_Hexadecimal(GtkWidget *widget, GdkEventKey *event, gpointer pointe
 	{
 	  val = (guchar)val_read;
 	  send_serial(&val, 1);
-	  sprintf(written, "%02X ", val);
+	  snprintf(written, sizeof(written), "%02X ", val);
 	  strcat(all_written, written);
 	  sent++;
 	}
