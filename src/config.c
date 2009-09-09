@@ -891,7 +891,7 @@ gint Load_configuration_from_file(gchar *config_name)
 		term_conf.show_cursor = TRUE;
 		term_conf.rows = 80;
 		term_conf.columns = 25;
-                term_conf.scrollback_lines = 100;
+                term_conf.scrollback_lines = 10000;
 		term_conf.visual_bell = FALSE;
 
 		term_conf.foreground_color.red = 43253;
