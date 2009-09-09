@@ -27,7 +27,7 @@ gint Check_configuration_file(void);
 
 struct configuration_port {
   gchar port[64];
-  gint vitesse;                // 300 - 600 - 1200 - ... - 115200
+  gint vitesse;                // 300 - 600 - 1200 - ... - 230400
   gint bits;                   // 5 - 6 - 7 - 8
   gint stops;                  // 1 - 2
   gint parite;                 // 0 : aucune, 1 : impaire, 2 : paire

@@ -219,6 +219,7 @@ gint Config_Port_Fenetre(GtkWidget *widget, guint param)
   liste = g_list_append(liste, "38400");
   liste = g_list_append(liste, "57600");
   liste = g_list_append(liste, "115200");
+  liste = g_list_append(liste, "230400");
   gtk_combo_set_popdown_strings(GTK_COMBO(Combo), liste);
   gtk_combo_set_value_in_list(GTK_COMBO(Combo), TRUE, FALSE);
 
@@ -945,6 +946,7 @@ void Verify_configuration(void)
     case 38400:
     case 57600:
     case 115200:
+    case 230400:
       break;
       
     default:

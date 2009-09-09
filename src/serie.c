@@ -253,6 +253,9 @@ gchar *Config_port(void)
     case 115200:
       termios_p.c_cflag = B115200;
       break;
+    case 230400:
+      termios_p.c_cflag = B230400;
+      break;
     }
   switch(config.bits)
     {
