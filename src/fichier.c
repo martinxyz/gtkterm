@@ -36,6 +36,7 @@
 #include "widgets.h"
 #include "serie.h"
 #include "buffer.h"
+#include "i18n.h"
 
 /* Global variables */
 gint nb_car;
@@ -98,7 +99,7 @@ gint Envoie_fichier(GtkFileSelection *FS)
 
   NomFichier = g_strdup(gtk_file_selection_get_filename(FS));
 
-  if (!NomFichier || !strcmp(NomFichier, "") || NomFichier[strlen(NomFichier) - 1] == (gchar)"/")
+  if (!NomFichier || !strcmp(NomFichier, "") || NomFichier[strlen(NomFichier) - 1] == (gchar)'/')
     {
       g_free(str);
       str = g_strdup_printf(_("Error opening file\n"));
