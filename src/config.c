@@ -84,6 +84,7 @@ gint *transparency;
 gint *show_cursor;
 gint *rows;
 gint *columns;
+guint *scrollback_lines;
 gint *visual_bell;
 gint *foreground_red;
 gint *foreground_blue;
@@ -111,6 +112,7 @@ cfgStruct cfg[] = {
   {"term_show_cursor", CFG_BOOL, &show_cursor},
   {"term_rows", CFG_INT, &rows},
   {"term_columns", CFG_INT, &columns},
+  {"term_scrollback_lines", CFG_UINT, &scrollback_lines},
   {"term_visual_bell", CFG_BOOL, &visual_bell},
   {"term_foreground_red", CFG_INT, &foreground_red},
   {"term_foreground_blue", CFG_INT, &foreground_blue},
@@ -147,6 +149,7 @@ static gint config_color_fg(GtkWidget *, gpointer);
 static gint config_color_bg(GtkWidget *, gpointer);
 static void Transparency_OnOff(GtkWidget *, gpointer);
 static void change_scale(GtkRange *, gpointer);
+static void Config_Scrollback_lines(GtkSpinButton *, gpointer);
 
 extern GtkWidget *display;
 
@@ -862,6 +865,8 @@ gint Load_configuration_from_file(gchar *config_name)
 	    if(columns[i] != 0)
 	      term_conf.columns = columns[i];
 
+            term_conf.scrollback_lines = scrollback_lines[i];
+
 	    if(visual_bell[i] != -1)
 	      term_conf.visual_bell = (gboolean)visual_bell[i];
 	    else
@@ -886,6 +891,7 @@ gint Load_configuration_from_file(gchar *config_name)
 		term_conf.show_cursor = TRUE;
 		term_conf.rows = 80;
 		term_conf.columns = 25;
+                term_conf.scrollback_lines = 100;
 		term_conf.visual_bell = FALSE;
 
 		term_conf.foreground_color.red = 43253;
@@ -914,6 +920,7 @@ gint Load_configuration_from_file(gchar *config_name)
 
   vte_terminal_set_background_transparent(VTE_TERMINAL(display), term_conf.transparency);
   vte_terminal_set_size (VTE_TERMINAL(display), term_conf.rows, term_conf.columns);
+  vte_terminal_set_scrollback_lines(VTE_TERMINAL(display), term_conf.scrollback_lines);
   vte_terminal_set_color_foreground (VTE_TERMINAL(display), &term_conf.foreground_color);
   vte_terminal_set_color_background (VTE_TERMINAL(display), &term_conf.background_color);
   vte_terminal_set_background_saturation(VTE_TERMINAL(display), (gdouble)term_conf.background_saturation);
@@ -1025,6 +1032,7 @@ void Hard_default_configuration(void)
   term_conf.show_cursor = TRUE;
   term_conf.rows = 80;
   term_conf.columns = 25;
+  term_conf.scrollback_lines = 100;
   term_conf.visual_bell = TRUE;
 
   Selec_couleur(&term_conf.foreground_color, 0.66, 0.66, 0.66);
@@ -1146,6 +1154,10 @@ void Copy_configuration(int pos)
   string = g_strdup_printf("%d", term_conf.columns);
   cfgStoreValue(cfg, "term_columns", string, CFG_INI, pos);
   g_free(string);
+
+  string = g_strdup_printf("%u", term_conf.scrollback_lines);
+  cfgStoreValue(cfg, "term_scrollback_lines", string, CFG_INI, pos);
+  g_free(string);
   
   if(term_conf.visual_bell == FALSE)
     string = g_strdup_printf("False");
@@ -1261,7 +1273,8 @@ gint remove_section(gchar *cfg_file, gchar *section)
 
 gint Config_Terminal(GtkWidget *widget, guint param)
 {
-  GtkWidget *Dialog, *BoiteH, *BoiteV, *Label, *Check_Bouton, *Bouton, *Eventbox, *Table, *HScale;
+  GtkWidget *Dialog, *BoiteH, *BoiteV, *Label, *Check_Bouton, *Bouton, *Eventbox, *Table, *HScale, *Spin;
+  GtkObject *adj;
   gchar *fonte;
 
   Dialog = gtk_dialog_new_with_buttons (_("Terminal configuration"),
@@ -1341,6 +1354,20 @@ gint Config_Terminal(GtkWidget *widget, guint param)
   gtk_widget_set_sensitive(GTK_WIDGET(HScale), term_conf.transparency);
   gtk_box_pack_start(GTK_BOX(BoiteV), HScale, FALSE, TRUE, 0);
 
+  Label = gtk_label_new(NULL);
+  gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
+  gtk_label_set_markup(GTK_LABEL(Label), "<b>Terminal : </b>");
+  gtk_box_pack_start(GTK_BOX(BoiteV), Label, FALSE, TRUE, 10);
+
+  BoiteH = gtk_hbox_new(FALSE, 0);
+  Label = gtk_label_new(_("Scrollback lines :"));
+  gtk_box_pack_start(GTK_BOX(BoiteH), Label, FALSE, TRUE, 0);
+  adj = gtk_adjustment_new(0.0, 0.0, 1000000.0, 100.0, 1000.0, 0.0);
+  Spin = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 100.0, 0);
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(Spin), (gfloat)term_conf.scrollback_lines);
+  gtk_box_pack_start(GTK_BOX(BoiteH), Spin, FALSE, TRUE, 10);
+  g_signal_connect(GTK_OBJECT(Spin), "value-changed", G_CALLBACK(Config_Scrollback_lines), 0);
+  gtk_box_pack_start(GTK_BOX(BoiteV), BoiteH, FALSE, TRUE, 0);
 
   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(Dialog)->vbox), BoiteV);
 
@@ -1473,4 +1500,15 @@ static void change_scale(GtkRange *range, gpointer data)
   string = g_strdup_printf("%g", term_conf.background_saturation);
   cfgStoreValue(cfg, "term_background_saturation", string, CFG_INI, 0);
   g_free(string);  
+}
+
+static void Config_Scrollback_lines(GtkSpinButton *spinbutton, gpointer data)
+{
+  gchar *string;
+  term_conf.scrollback_lines = gtk_spin_button_get_value_as_int(spinbutton);
+  vte_terminal_set_scrollback_lines(VTE_TERMINAL(display), term_conf.scrollback_lines);
+
+  string = g_strdup_printf("%u", term_conf.scrollback_lines);
+  cfgStoreValue(cfg, "term_scrollback_lines", string, CFG_INI, 0);
+  g_free(string);
 }
