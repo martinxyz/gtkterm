@@ -10,4 +10,8 @@ po/POTFILES
 .deps
 src/gtkterm
 stamp-h1
+TAGS
+aclocal.m4
+config.h.in
+configure
 
