@@ -577,11 +577,13 @@ void Save_config_file(void)
 					GTK_STOCK_OK,
 					GTK_RESPONSE_ACCEPT,
 					NULL);
+  gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
 
   label=gtk_label_new(_("Configuration name : "));
 
   box = gtk_hbox_new(FALSE, 0);
   entry = gtk_entry_new();
+  gtk_entry_set_activates_default(GTK_ENTRY(entry), TRUE);
   gtk_box_pack_start(GTK_BOX(box), label, FALSE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(box), entry, FALSE, TRUE, 0);
 
