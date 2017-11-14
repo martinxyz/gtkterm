@@ -1,3 +1,10 @@
+NOTE: this repository contains some patches I wrote/collected above the last official release (GTK2).
+
+I'm no longer using or maintaining it. Maybe try https://github.com/Jeija/gtkterm instead.
+(If you think I should link another repo, please drop me a note.)
+
+Original readme follows.
+
 GTKTerm : a GTK+ serial port terminal
 =====================================
          (c) Julien Schmitt - julien@jls-info.com
